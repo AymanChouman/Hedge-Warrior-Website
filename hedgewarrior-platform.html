@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hedge Warrior V1 – Trading Platform</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --primary: #00adb5;
+      --white: #e0e6ed;
+      --bg: #16213e;
+      --card: #1a2332;
+      --shadow: 0 7px 34px #14213d80;
+      --radius-lg: 22px;
+      --radius-md: 10px;
+    }
+    body { background: linear-gradient(135deg,#0d1b2a,#222e40 85%); color: var(--white); font-family: 'Segoe UI', Arial, sans-serif; margin: 0;}
+    .container { max-width: 700px; margin: 50px auto; background: var(--bg); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 44px 28px 36px 28px; }
+    h1 { color: var(--primary); text-align: center; font-size: 2.2em; }
+    .section-title { color: var(--primary); font-size: 1.18em; font-weight: bold; margin-top: 2.2em; margin-bottom: 0.7em;}
+    .howto-link, .mt5-link { color: var(--primary); font-weight: bold; font-size: 1.05em; text-decoration: underline;}
+    .back { text-align: center; margin-bottom: 2em; }
+    .back a { color: var(--primary); text-decoration: none; font-weight: bold; }
+    .back a:hover { text-decoration: underline; }
+    .tip { background: var(--card); border-left: 5px solid var(--primary); color: var(--white); margin: 2.1em 0 0 0; padding: 18px 20px; border-radius: var(--radius-md); font-size:1.06em;}
+    .platform-list { margin: 0.7em 0 0.7em 1.2em; }
+    .ref-code { background: var(--primary); color: var(--white); border-radius: 4px; padding: 2px 8px; font-size:1.05em; margin: 0 4px; display: inline-block;}
+    .ref-note { color: var(--white); font-size:0.98em; }
+    .intro-box { background: var(--card); border-radius: var(--radius-md); padding: 18px 16px; margin-bottom: 2em; color: var(--white); box-shadow: 0 3px 18px #0d1b2a44;}
+    .highlight { color: var(--primary); font-weight: bold;}
+    .mt5-download { margin-top:1.7em; margin-left: 1.3em; color:var(--white); font-size:1.09em; background: var(--bg); border-left: 4px solid var(--primary); border-radius: var(--radius-md); padding: 13px 16px 13px 15px;}
+    @media (max-width:540px) {
+      .container{padding:18px 4vw 30px 4vw;}
+      h1{font-size:1.3em;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back"><a href="hedgewarrior-landing.html">&larr; Back to Home</a></div>
+    <h1>💻 Trading Platform</h1>
+    <div class="intro-box">
+      <b class="highlight">Introduction</b><br>
+      Hedge Warrior V1 is built for use on the <b>MetaTrader 5 (MT5)</b> platform, which is offered by most major brokers worldwide. You may use this EA with any broker that supports MT5, but beyond basic due diligence and regulatory licensing, it's critical to check the <b>details of leverage, execution quality, trading hours, spread/fees</b>, and whether the broker uses <b>dynamic or fixed margin requirements</b>.
+      <br><br>
+      After testing with more than 10 brokers, I've found that <span class="highlight">Vantage Markets</span> provides the <b>best conditions</b>:
+      <ul>
+        <li>Ultra-low BTCUSD spreads (transaction cost around <span class="highlight">$18</span> for <b>1 lot</b>; <span class="highlight">$1.8</span> for <b>0.1 lots</b>; and <span class="highlight">$0.18</span> for <b>0.01 lots</b> — approx. <span class="highlight">0.015% fee</span> per trade)</li>
+        <li>Stable <span class="highlight">500:1 leverage</span> (non-dynamic, does not change)</li>
+        <li>BTC trades <span class="highlight">24/7</span></li>
+        <li>Minimum allowed lot size is <span class="highlight">0.01</span></li>
+        <li>Maximum allowed volume per trade is <span class="highlight">100 lots</span></li>
+      </ul>
+      In short, these are the best trading conditions for Hedge Warrior V1 after extensive real-world testing.
+    </div>
+    <div class="section-title">How to Open an Account</div>
+    <ul class="platform-list">
+      <li>
+        <b>Recommended Broker:</b> Vantage Markets
+      </li>
+      <li>
+        <b>Sign Up Link:</b>
+        <a class="howto-link" href="https://www.vantagemarkets.com/open-live-account/?affid=NzM2MTYzMw==" target="_blank" rel="noopener">
+          Open Live Account at Vantage Markets
+        </a>
+      </li>
+      <li>
+        <b>Referral Invitation Code:</b>
+        <span class="ref-code">HedgeWarrior</span>
+        <span class="ref-note">(Enter this code when prompted to ensure you receive full benefits and support.)</span>
+      </li>
+    </ul>
+
+    <div class="mt5-download">
+      <b>Next Step:</b> After opening your account, go to the broker’s <b>Downloads</b> section and download the <span class="mt5-link">MetaTrader 5 (MT5)</span> platform for your device. This is required to run Hedge Warrior V1.
+    </div>
+
+    <div class="tip">
+      <b>Why Vantage Markets?</b><br>
+      Low spreads, fast execution, and MT5 support make it an ideal broker for Hedge Warrior V1. Using the referral code helps support the ongoing development of this EA!
+    </div>
+    <div class="tip">
+      <b>Note:</b> Always research your broker, check regulations, and use a demo account before trading live. See the other sections for installation, user guide, and settings.
+    </div>
+  </div>
+</body>
+</html>
