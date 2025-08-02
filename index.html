@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hedge Warrior V1 – All-in-One Automated Trading</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --primary: #00adb5;
+      --white: #e0e6ed;
+      --bg: #16213e;
+      --card: #1a2332;
+      --shadow: 0 7px 34px #14213d80;
+      --radius-lg: 22px;
+      --accent: #ff2566;
+    }
+    body {
+      background: linear-gradient(135deg,#0d1b2a,#222e40 85%);
+      color: var(--white);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .hero {
+      text-align: center;
+      margin-top: 36px;
+      margin-bottom: 24px;
+    }
+    .hero-icon {
+      margin-bottom: 8px;
+      filter: drop-shadow(0 2px 16px #0d1b2a80);
+      height: 63px;
+      width: 63px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-emoji {
+      font-size: 3.8em;
+      margin-bottom: 8px;
+      display: none;
+    }
+    .hero-title {
+      font-size: 2.8em;
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 9px;
+    }
+    .hero-sub {
+      font-size: 1.34em;
+      color: var(--white);
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.01em;
+      opacity: 0.93;
+    }
+    .hero-sub .accent {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .hero-marketing {
+      font-size: 1.12em;
+      color: #b8f1f5;
+      font-weight: 500;
+      margin: 2px auto 18px auto;
+      max-width: 700px;
+      line-height: 1.51em;
+      opacity: 1;
+      letter-spacing: 0.01em;
+    }
+    .buttons-flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 32px 38px;
+      max-width: 600px;
+      margin: 0 auto 22px auto;
+      margin-top: 12px;
+      flex-direction: row;
+      position: relative;
+      height: 220px;
+    }
+    .main-btn {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      font-size: 1.26em;
+      font-weight: bold;
+      color: var(--white);
+      text-decoration: none;
+      height: 92px;
+      min-width: 230px;
+      cursor: pointer;
+      transition: background 0.17s, box-shadow 0.17s, transform 0.16s;
+      outline: none;
+      position: relative;
+      z-index: 1;
+      user-select: none;
+    }
+    .main-btn:hover {
+      background: #22314e;
+      box-shadow: 0 9px 32px #1a2332b0;
+      transform: translateY(-2px) scale(1.04);
+      color: var(--primary);
+    }
+    .main-btn .btn-icon {
+      width: 41px;
+      height: 41px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #16213e;
+      border-radius: 13px;
+      box-shadow: 0 2px 9px #22314e55;
+      font-size: 2.1em;
+      margin-left: 18px;
+      margin-right: 0;
+      flex-shrink: 0;
+    }
+    .main-btn .btn-label {
+      font-size: 1.13em;
+      font-weight: bold;
+      text-shadow: 0 2px 9px #16213e44;
+      letter-spacing: 0.01em;
+    }
+    .btn-backtesting   { position: absolute; left: 0; top: 0; }
+    .btn-userguide     { position: absolute; right: 0; top: 0; }
+    .btn-getstarted    { position: absolute; left: 0; bottom: 0; }
+    .btn-calculator    { position: absolute; right: 0; bottom: 0; }
+    /* Warning Card */
+    .warning-card {
+      background: #2d1a1a;
+      color: #ffe066;
+      border-radius: 12px;
+      border: 2px solid #ff2566;
+      box-shadow: 0 2px 16px #ff256644;
+      max-width: 700px;
+      margin: 0 auto 32px auto;
+      padding: 18px 22px;
+      font-size: 1.09em;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      letter-spacing: 0.01em;
+      line-height: 1.47em;
+      position: relative;
+    }
+    .warning-card .warning-icon {
+      font-size: 2.1em;
+      color: #ff2566;
+      flex-shrink: 0;
+      margin-right: 6px;
+      margin-left: 3px;
+      filter: drop-shadow(0 2px 7px #ff2566aa);
+    }
+    .warning-card .warning-text {
+      flex: 1;
+      color: #ffe066;
+    }
+    @media (max-width:700px) {
+      .main-btn {height: 76px; font-size: 1.11em; min-width: 160px;}
+      .main-btn .btn-icon {width: 32px; height: 32px; font-size: 1.55em; margin-left: 10px;}
+      .buttons-flex {height: 180px;}
+      .warning-card {font-size: 1em; padding: 11px 7px;}
+    }
+    @media (max-width:480px) {
+      .hero-title{font-size:1.5em;}
+      .main-btn {height: 56px; font-size: 0.99em; min-width: 120px;}
+      .main-btn .btn-icon {width: 26px; height: 26px; font-size: 1.11em; margin-left: 7px;}
+      .buttons-flex {height: 140px;}
+      .warning-card {font-size: 0.97em;}
+    }
+    @media (max-width:370px) {
+      .main-btn {height: 41px; font-size: 0.91em; min-width: 70px;}
+      .main-btn .btn-icon {width: 16px; height: 16px; font-size: 0.91em; margin-left: 2px;}
+      .buttons-flex {height: 90px;}
+      .warning-card {font-size: 0.93em;}
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <!-- Robot Icon as image (shows if file exists), shows emoji if not -->
+    <img src="icon-bot.png" alt="Hedge Warrior Bot" class="hero-icon" onerror="this.style.display='none';document.querySelector('.hero-emoji').style.display='block';" />
+    <div class="hero-emoji" style="display:none;">🤖</div>
+    <div class="hero-title">Hedge Warrior V1</div>
+    <div class="hero-sub">
+      Automated Trading Robot for Any Market — <span style="color:#00adb5;font-weight:bold;">Fast</span>, <span style="color:#00adb5;font-weight:bold;">Smart</span>, <span style="color:#00adb5;font-weight:bold;">Adaptive</span> &amp; <span class="accent">Future-Ready</span>
+    </div>
+    <div class="hero-marketing">
+      <b>Discover Hedge Warrior V1 – the next step in automated MetaTrader 5 trading.</b><br>
+      Designed for traders who want more control and versatility, Hedge Warrior V1 combines intelligent position splitting, dynamic hedging, and automated risk management in one powerful EA.<br>
+      This robot adapts to market conditions with configurable indicator filters and session controls, so you can stay focused on strategy and let the automation do the heavy lifting.
+    </div>
+  </div>
+  <div class="buttons-flex">
+    <!-- Backtesting | left -->
+    <a href="Backtesting.html" class="main-btn btn-backtesting">
+      <div class="btn-icon" style="background:#192035;"><span>📊</span></div>
+      <div class="btn-label">Backtesting</div>
+    </a>
+    <!-- User Guide | right -->
+    <a href="Guide.html" class="main-btn btn-userguide">
+      <div class="btn-icon" style="background:#232e4e;"><span>📄</span></div>
+      <div class="btn-label">User Guide</div>
+    </a>
+    <!-- Getting Started | lower left -->
+    <a href="GettingStarted.html" class="main-btn btn-getstarted">
+      <div class="btn-icon" style="background:#2ed6d0;"><span>🚀</span></div>
+      <div class="btn-label">Getting Started</div>
+    </a>
+    <!-- Calculator | lower right -->
+    <a href="HedgeCalculator.html" class="main-btn btn-calculator">
+      <div class="btn-icon" style="background:#ffe066;color:#222e40;"><span>🧮</span></div>
+      <div class="btn-label">Hedge Calculator</div>
+    </a>
+  </div>
+  <div class="warning-card">
+    <span class="warning-icon">⚠️</span>
+    <span class="warning-text">
+      <span style="color:#ff2566; font-weight:bold;">
+        Start with demo trading and switch to live only once you are fully comfortable with its features and behavior.<br>
+      </span>
+      <b>Disclaimer:</b> Hedge Warrior V1 is a trading tool, not investment advice. Past performance does not guarantee future results. Use at your own risk. Trading leveraged products involves significant risk of loss, and you should never trade with money you cannot afford to lose.
+    </span>
+  </div>
+</body>
+</html>
