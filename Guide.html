@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hedge Warrior V1 – User Guide</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --primary: #00adb5;
+      --white: #e0e6ed;
+      --bg: #16213e;
+      --card: #1a2332;
+      --shadow: 0 7px 34px #14213d80;
+      --radius-lg: 22px;
+      --radius-md: 10px;
+    }
+    body {
+      background: linear-gradient(135deg,#0d1b2a,#222e40 85%);
+      color: var(--white);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+    }
+    .container {
+      max-width: 750px;
+      margin: 50px auto;
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 44px 28px 36px 28px;
+      display: none; /* Hidden until password is entered */
+    }
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      font-size: 2.2em;
+    }
+    h2 {
+      color: var(--primary);
+      margin-top: 2em;
+    }
+    h3 {
+      color: var(--primary);
+    }
+    ul, ol {
+      margin-left: 1.2em;
+      color: var(--white);
+    }
+    .back {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .back a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back a:hover {
+      text-decoration: underline;
+    }
+    .param-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      background: var(--card);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .param-table th {
+      background: #14213d;
+      color: var(--primary);
+      padding: 9px 11px;
+      font-weight: bold;
+      border-bottom: 2px solid var(--primary);
+      text-align: left;
+    }
+    .param-table td {
+      border: 1px solid #232e4e;
+      padding: 8px 11px;
+      color: var(--white);
+      vertical-align: top;
+    }
+    .param-table tr:nth-child(even){
+      background: #192035;
+    }
+    .color-chip {
+      display: inline-block;
+      min-width: 58px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.99em;
+      margin-right: 3px;
+      color: #fff;
+    }
+    .chip-blue { background: #3a83e2; }
+    .chip-red { background: #d44f4f; }
+    .chip-green { background: #41c948; }
+    .chip-yellow { background: #ffe066; color: #222e40;}
+    .chip-orange { background: #ff9800; color: #fff;}
+    .chip-violet { background: #b67efc; }
+    .chip-aqua { background: #2ed6d0; }
+    .chip-lime { background: #41c948; }
+    .chip-silver { background: #c3c7d1; color: #222e40;}
+    .chip-white { background: #e0e6ed; color: #222e40;}
+    .chip-orangeRed { background: #ff9800; color: #fff;}
+    .chip-btn-red { background: #d44f4f; color: #e0e6ed; }
+    .chip-btn-lime { background: #41c948; color: #e0e6ed; }
+    .chip-btn-orangeRed { background: #ff9800; color: #e0e6ed; }
+    @media (max-width:540px) {
+      .container{padding:18px 4vw 30px 4vw;}
+      h1{font-size:1.4em;}
+      .param-table th, .param-table td { padding: 7px 6px; font-size: 0.98em;}
+    }
+    .input-note {
+      display: block;
+      color: #e0e6ed;
+      font-size: 0.98em;
+      margin-left: 0.5em;
+      margin-top: 2px;
+      font-style: normal;
+      opacity: 1;
+      font-weight: normal;
+    }
+    .circle {
+      display:inline-block;
+      width:1.1em;
+      height:1.1em;
+      border-radius:50%;
+      margin-right:8px;
+      vertical-align:-2px;
+      border: 1.5px solid #fff3;
+    }
+    .blue   { background:#3a83e2;}
+    .red    { background:#d44f4f;}
+    .green  { background:#41c948;}
+    .yellow { background:#ffe066;}
+    .orange { background:#ff9800;}
+    .violet { background:#b67efc;}
+    .aqua   { background:#2ed6d0;}
+    /* Password box styles */
+    #pwbox {
+      max-width: 320px;
+      margin: 100px auto;
+      background: #1a2332;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 34px 28px;
+      text-align: center;
+      display: block;
+      position: relative;
+    }
+    #pwbox label {
+      color: var(--primary);
+      font-size: 1.11em;
+      font-weight: bold;
+      display:block;
+      margin-bottom: 13px;
+    }
+    #pwbox input[type="password"] {
+      width: 80%;
+      font-size:1.09em;
+      padding: 9px 12px;
+      border-radius: 7px;
+      border: 1px solid #233;
+      margin-bottom: 18px;
+      background: #232e4e;
+      color: var(--white);
+      outline: none;
+    }
+    #pwbox button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      font-size: 1.1em;
+      font-weight: bold;
+      padding: 8px 24px;
+      border-radius: 7px;
+      box-shadow: 0 2px 11px #16213e55;
+      cursor: pointer;
+      transition: background 0.16s;
+    }
+    #pwbox button:hover { background: #009ba0; }
+    #pwbox .error {
+      color: #ff6666;
+      font-size: 1em;
+      margin-top: 7px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .pwbox-back {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: -32px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .pwbox-back a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.13em;
+      transition: color 0.16s;
+    }
+    .pwbox-back a:hover {
+      text-decoration: underline;
+      color: #009ba0;
+    }
+    @media (max-width:540px) {
+      #pwbox {padding: 18px 4vw;}
+      .pwbox-back a {font-size:1em;}
+      .pwbox-back{top:-22px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Password Gate -->
+  <form id="pwbox" onsubmit="return false;">
+    <div class="pwbox-back"><a href="index.html">&larr; Back to Home</a></div>
+    <label for="pwinput">Enter Password to view guide:</label>
+    <input id="pwinput" type="password" autocomplete="off" autofocus>
+    <button id="pwbtn">Access Guide</button>
+    <div id="pwerr" class="error" style="display:none;"></div>
+  </form>
+
+  <div class="container">
+    <div class="back"><a href="index.html">&larr; Back to Home</a></div>
+    <h1>🕹️ Hedge Warrior V1 User Guide</h1>
+
+    <h2>Key Inputs &amp; What They Do</h2>
+    <!-- ... rest of file stays the same ... -->
+  </div>
+  <script>
+    // Password protection logic
+    const pwbox = document.getElementById('pwbox');
+    const pwinput = document.getElementById('pwinput');
+    const pwbtn = document.getElementById('pwbtn');
+    const pwerr = document.getElementById('pwerr');
+    const mainContainer = document.querySelector('.container');
+    function showError(txt) {
+      pwerr.innerText = txt;
+      pwerr.style.display = 'block';
+    }
+    function unlockGuide() {
+      pwbox.style.display = 'none';
+      mainContainer.style.display = 'block';
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }
+    pwbtn.onclick = function() {
+      const val = pwinput.value.trim();
+      if (val === "zeroescape") {
+        unlockGuide();
+      } else {
+        showError("Incorrect password. Try again.");
+        pwinput.value = "";
+        pwinput.focus();
+      }
+    };
+    // Allow Enter key
+    pwinput.onkeypress = function(e) {
+      if (e.key === "Enter") pwbtn.click();
+    };
+    // Autofocus
+    window.onload = function() {
+      pwinput.focus();
+    };
+  </script>
+</body>
+</html>
