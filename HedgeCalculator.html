@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grid Hedging Calculator (Net P/L is BE to TP x net position)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      --primary: #00adb5;
+      --white: #e0e6ed;
+      --bg: #16213e;
+      --card: #1a2332;
+      --shadow: 0 7px 34px #14213d80;
+      --transition: 0.18s cubic-bezier(.4,1.5,.5,1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      min-width: 100vw;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg,#0d1b2a,#222e40 85%);
+      color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      min-height: 100vh;
+      padding: 0;
+      font-size: 16px;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    .calculator-container {
+      display: flex;
+      background: var(--bg);
+      border-radius: 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      width: 100vw;
+      max-width: 100vw;
+      min-height: 100vh;
+      height: 100vh;
+    }
+    .left-column {
+      flex: 0 0 340px;
+      background: #1a2332;
+      padding: 32px 22px;
+      border-right: 1px solid #233;
+      overflow-y: auto;
+      min-width: 340px;
+      max-width: 420px;
+      box-sizing: border-box;
+      height: 100vh;
+    }
+    .left-column h1 {
+      font-size: 1.25em;
+      margin-bottom: 14px;
+      text-align: center;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    .back-home {
+      display: inline-block;
+      margin: 0 0 22px 0;
+      font-size: 1.19em;
+      font-weight: bold;
+      color: var(--primary);
+      background: none;
+      border: none;
+      text-decoration: none;
+      padding: 0;
+      transition: color var(--transition);
+      letter-spacing: 0.01em;
+      outline: none;
+      box-shadow: none;
+    }
+    .back-home:before {
+      content: "←";
+      margin-right: 7px;
+      font-size: 1em;
+      font-weight: bold;
+      vertical-align: middle;
+      color: var(--primary);
+      filter: drop-shadow(0 2px 6px #18213a44);
+    }
+    .back-home:hover {
+      color: #009ba0;
+      text-decoration: underline;
+    }
+    .inputs .row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .inputs .row label {
+      font-weight: 600;
+      font-size: 1em;
+      color: #e0e6ed;
+      word-break: break-word;
+    }
+    .inputs .row input,
+    .inputs .row select {
+      width: 100%;
+      background: #232e4e;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 7px 9px;
+      font-size: 1em;
+      color: var(--white);
+    }
+    .output-block {
+      margin-top: 26px;
+      font-size: 1em;
+      color: #cccccc;
+    }
+    .output-block p {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .output-block .label {
+      flex: 0 0 130px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .output-block .value {
+      flex: 1 1 auto;
+      text-align: right;
+      color: var(--white);
+    }
+    .right-column {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 28px;
+      overflow: auto;
+      background: var(--bg);
+      box-sizing: border-box;
+      height: 100vh;
+      width: 100%;
+      min-width: 0;
+    }
+    .right-column h1 {
+      font-size: 1.25em;
+      margin-bottom: 14px;
+      text-align: center;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    #result {
+      flex: 1 1 auto;
+      overflow-x: auto;
+      overflow-y: auto;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg);
+      table-layout: auto;
+      font-size: 1.02em;
+      min-width: 900px;
+      max-width: 100vw;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: center;
+      word-wrap: break-word;
+      border-bottom: 1px solid #232e4e;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #14213d;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    tr:nth-child(even) td { background: #192035; }
+    tr:nth-child(odd)  td { background: #1a2332; }
+    tr:hover td         { background: #22314e; }
+    .buy, .profit      { color: #66ff66; }
+    .sell, .loss       { color: #ff6666; }
+    .maxdd             { color: #ff6666; font-weight: 600; }
+    .maxdd.zero        { color: #cccccc; font-weight: 400; }
+    .beval             { color: #ffe066; font-weight: 600; }
+
+    /* --- MOBILE FRIENDLY --- */
+    @media (max-width:1024px) {
+      table { min-width: 700px; }
+    }
+    @media (max-width:850px) {
+      .calculator-container{flex-direction:column;height:auto;}
+      .left-column{border-right:none;border-bottom:1px solid #233;min-width:unset;max-width:unset;height:auto;}
+      .right-column{padding:20px;min-width:0;height:auto;}
+      table{min-width:600px;}
+    }
+    @media (max-width:540px) {
+      body { font-size: 15px; }
+      .calculator-container{flex-direction:column;padding:0;height:auto;}
+      .left-column{padding:14px 5vw;min-width:unset;max-width:unset;height:auto;border-bottom:1px solid #233;}
+      .right-column{padding:14px 5vw;min-width:0;height:auto;}
+      .inputs .row { grid-template-columns: 1fr; gap: 2px; }
+      .inputs .row label { margin-bottom: 2px; }
+      table, th, td{font-size:0.95em;}
+      table{min-width:320px;}
+      th, td { padding: 8px 5px; }
+      .output-block p { flex-direction: column; align-items: flex-start; margin-bottom: 6px; }
+      .output-block .label, .output-block .value { text-align: left; }
+    }
+    @media (max-width:400px) {
+      .left-column, .right-column { padding: 7px 2vw; }
+      table{font-size:0.91em;}
+      th, td { padding: 6px 2px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator-container">
+    <div class="left-column">
+      <a class="back-home" href="index.html">Back to Home</a>
+      <h1>Hedge Entry</h1>
+      <div class="inputs">
+        <!-- Symbol Dropdown -->
+        <div class="row">
+          <label>Symbol:</label>
+          <select id="symbolDropdown" onchange="populateSymbolInputs()">
+            <option value="BTCUSD">BTCUSD</option>
+            <option value="NAS100">NAS100</option>
+          </select>
+        </div>
+        <div class="row"><label>Direction:</label>
+          <select id="startingPos" oninput="calculateHedges()">
+            <option>Buy</option>
+            <option>Sell</option>
+          </select>
+        </div>
+        <div class="row"><label>Entry Price:</label>
+          <input id="assetPrice" type="number" value="113000" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Lot Size:</label>
+          <input id="initialLot" type="number" value="0.1" step="0.01" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Inner Gap %:</label>
+          <input id="innerPct" type="number" value="1.4" step="0.01" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>RR Ratio:</label>
+          <input id="riskReward" type="number" value="0.7" step="0.01" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Buffer %:</label>
+          <input id="costBuffer" type="number" value="10" step="0.1" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Hedge Count:</label>
+          <input id="numHedges" type="number" value="4" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Spread Ticks:</label>
+          <input id="spreadTicks" type="number" value="1800" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Leverage:</label>
+          <input id="leverage" type="number" value="500" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Contracts / Lot:</label>
+          <input id="contractsPerLot" type="number" value="1" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Max Lots:</label>
+          <input id="maxLots" type="number" value="100" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Min Lot Increment:</label>
+          <input id="minLotInc" type="number" value="0.01" step="0.01" oninput="calculateHedges()">
+        </div>
+        <div class="row"><label>Stop-Out %:</label>
+          <input id="stopOutPct" type="number" value="20" step="0.01" oninput="calculateHedges()">
+        </div>
+      </div>
+      <div class="output-block">
+        <p><span class="label">Gap Points:</span><span class="value" id="innerDistance">0</span></p>
+        <p><span class="label">Outer Gap:</span><span class="value" id="outerDistance">0</span></p>
+        <p><span class="label">Level → TP %:</span><span class="value" id="distToOuter">–</span></p>
+        <p><span class="label">Entry Level:</span><span class="value" id="mainHedge">–</span></p>
+        <p><span class="label">Hedge Level:</span><span class="value" id="hedgeLevel">–</span></p>
+        <p><span class="label">Upper TP:</span><span class="value" id="upperOuter">–</span></p>
+        <p><span class="label">Lower TP:</span><span class="value" id="lowerOuter">–</span></p>
+        <p><span class="label">Buffer Req:</span><span class="value" id="bufferRequired">0%</span></p>
+      </div>
+    </div>
+    <div class="right-column">
+      <h1>Results</h1>
+      <div id="result"></div>
+    </div>
+  </div>
+<script>
+function parseNumber(str) {
+  return parseFloat(str.replace(/,/g, '')) || 0;
+}
+
+function formatNumber(n, digits = 2) {
+  if (typeof n === "string") n = parseFloat(n);
+  return n.toLocaleString(undefined, {minimumFractionDigits: digits, maximumFractionDigits: digits});
+}
+
+function calculateHedges() {
+  const startingPos     = document.getElementById('startingPos').value;
+  const assetPrice      = parseNumber(document.getElementById('assetPrice').value);
+  const initialLot      = parseNumber(document.getElementById('initialLot').value);
+  const innerPct        = parseNumber(document.getElementById('innerPct').value) / 100;
+  const rr              = parseNumber(document.getElementById('riskReward').value);
+  const costBuffer      = parseNumber(document.getElementById('costBuffer').value) / 100;
+  const numHedges       = parseInt(document.getElementById('numHedges').value, 10) || 0;
+  const spreadTicks     = parseNumber(document.getElementById('spreadTicks').value);
+  const leverage        = parseNumber(document.getElementById('leverage').value);
+  const contractsPerLot = parseNumber(document.getElementById('contractsPerLot').value);
+  const maxLots         = parseNumber(document.getElementById('maxLots').value);
+  const minLotInc       = parseNumber(document.getElementById('minLotInc').value);
+  const stopOutPct      = parseNumber(document.getElementById('stopOutPct').value) / 100;
+  const tickSize        = 0.01;
+
+  // --- Anchored grid levels ---
+  const innerDistPts = assetPrice * innerPct;
+  const outerDistPts = innerDistPts * rr;
+  document.getElementById('innerDistance').innerText = Math.round(innerDistPts).toLocaleString();
+  document.getElementById('outerDistance').innerText = Math.round(outerDistPts).toLocaleString();
+  document.getElementById('distToOuter').innerText = assetPrice
+    ? ((outerDistPts / assetPrice * 100).toFixed(2) + '%')
+    : '–';
+  document.getElementById('bufferRequired').innerText = innerDistPts
+    ? ((spreadTicks * tickSize / innerDistPts * 100).toFixed(1) + ' %')
+    : '0.0 %';
+
+  let entryMain, entryHedge;
+  if (startingPos === 'Buy') {
+    entryMain = assetPrice;
+    entryHedge = assetPrice - innerDistPts;
+  } else {
+    entryMain = assetPrice;
+    entryHedge = assetPrice + innerDistPts;
+  }
+  document.getElementById('mainHedge').innerText = formatNumber(entryMain, 2);
+  document.getElementById('hedgeLevel').innerText = formatNumber(entryHedge, 2);
+
+  // Calculate upper/lower inner for TP anchoring
+  const upperInner = Math.max(entryMain, entryHedge);
+  const lowerInner = Math.min(entryMain, entryHedge);
+  const innerGap = Math.abs(entryMain - entryHedge);
+
+  const upperTP = upperInner + innerGap * rr;
+  const lowerTP = lowerInner - innerGap * rr;
+
+  document.getElementById('upperOuter').innerText = formatNumber(upperTP, 2);
+  document.getElementById('lowerOuter').innerText = formatNumber(lowerTP, 2);
+
+  let html = '<table><tr>' +
+    '<th></th><th>Level Price</th><th>Type</th><th>Lots</th>' +
+    '<th>Net</th><th>Margin</th><th>Max DD</th><th>Net P/L</th>' +
+    '<th>BE</th><th>Lvl→BE%</th><th>BE→TP%</th><th>DD→M</th>' +
+    '<th>P/L→M</th><th>RR</th><th>Req Equity</th>' +
+    '</tr>';
+
+  const coeff = (rr + 1) / rr;
+  let totalBuys = 0, totalSells = 0, costBuys = 0, costSells = 0;
+  let netVolCont = 0;
+  let avgEntry = 0;
+
+  function getRowLabel(i) {
+    if (i === 0) return "M";
+    return "H" + i;
+  }
+
+  function getLevelPrice(i) {
+    return (i % 2 === 0) ? entryMain : entryHedge;
+  }
+
+  for (let i = 0; i < 1 + numHedges; i++) {
+    const dir = startingPos === 'Buy'
+      ? (i % 2 === 0 ? 'Buy' : 'Sell')
+      : (i % 2 === 0 ? 'Sell' : 'Buy');
+    const lvl = getLevelPrice(i);
+
+    let lotSize;
+    if (i === 0) {
+      lotSize = initialLot;
+    } else {
+      const rawLot = coeff * (dir === 'Sell' ? totalBuys : totalSells)
+                   - (dir === 'Sell' ? totalSells : totalBuys);
+      let stepLot = Math.round(rawLot * (1 + costBuffer) / minLotInc) * minLotInc;
+      if (stepLot >= maxLots) {
+        lotSize = maxLots;
+      } else {
+        lotSize = Math.max(minLotInc, stepLot);
+      }
+    }
+
+    // Update total positions
+    if (dir === 'Buy') {
+      totalBuys += lotSize;
+      costBuys += lotSize * contractsPerLot * lvl;
+      netVolCont += lotSize * contractsPerLot;
+    } else {
+      totalSells += lotSize;
+      costSells += lotSize * contractsPerLot * lvl;
+      netVolCont -= lotSize * contractsPerLot;
+    }
+
+    // Update avgEntry for net position
+    avgEntry = netVolCont !== 0 ? (costBuys - costSells) / netVolCont : 0;
+
+    // Margin
+    const marginReq  = Math.round(Math.abs(netVolCont) * assetPrice / leverage);
+
+    // Max DD at adverse inner
+    let adverseInner;
+    if (netVolCont > 0) {
+      adverseInner = lowerInner;
+    } else if (netVolCont < 0) {
+      adverseInner = upperInner;
+    } else {
+      adverseInner = lvl;
+    }
+    let maxDD = Math.round((adverseInner - avgEntry) * netVolCont);
+
+    // Net P/L, using TP from upper/lower inner
+    let netPL = 0, TP = 0;
+    if (netVolCont > 0) {
+      TP = upperInner + innerGap * rr;
+      netPL = Math.abs(netVolCont) * (TP - avgEntry);
+    } else if (netVolCont < 0) {
+      TP = lowerInner - innerGap * rr;
+      netPL = Math.abs(netVolCont) * (avgEntry - TP);
+    }
+    netPL = Math.round(netPL);
+
+    let maxDDDisplay = maxDD < 0
+      ? '–$' + Math.abs(maxDD).toLocaleString()
+      : '$' + maxDD.toLocaleString();
+    let maxDDClass = maxDD < 0 ? 'maxdd' : 'maxdd zero';
+    let netPLDisplay = netPL > 0 ? '$' + netPL.toLocaleString() : '$0';
+
+    // Use 1000 separators for Level and BE, color BE yellow
+    const beDisp = netVolCont ? `<span class="beval">${formatNumber(avgEntry, 2)}</span>` : '–';
+    const lvlDisp = formatNumber(lvl, 2);
+
+    const lvlToBe= netVolCont && lvl ? (((avgEntry - lvl)/lvl)*100).toFixed(2)+'%' : '–';
+    const beToTp = netVolCont && avgEntry && TP
+      ? (Math.abs((netVolCont>0?TP-avgEntry:avgEntry-TP))/Math.abs(avgEntry)*100).toFixed(2)+'%'
+      : '–';
+    const ddToM = marginReq ? (Math.abs(maxDD)/marginReq).toFixed(1)+'×' : '–';
+    const plToM = marginReq ? (netPL/marginReq).toFixed(1)+'×' : '–';
+    const rrMul = netPL>0&&maxDD<0 ? (netPL/Math.abs(maxDD)).toFixed(1)+'×' : '–';
+
+    const reqEquity = Math.abs(maxDD) + (marginReq * stopOutPct);
+    const netDisp   = (netVolCont/ contractsPerLot)>0
+      ? `<span class="buy">${(netVolCont / contractsPerLot).toFixed(2)}</span>`
+      : (netVolCont/ contractsPerLot)<0
+        ? `<span class="sell">${Math.abs(netVolCont / contractsPerLot).toFixed(2)}</span>`
+        : '0';
+
+    html += `<tr>
+      <td>${getRowLabel(i)}</td>
+      <td>${lvlDisp}</td>
+      <td class="${dir.toLowerCase()}">${dir}</td>
+      <td>${lotSize.toFixed(2)}</td>
+      <td>${netDisp}</td>
+      <td>$${marginReq.toLocaleString()}</td>
+      <td class="${maxDDClass}">${maxDDDisplay}</td>
+      <td class="${netPL>0?'profit':'loss'}">${netPLDisplay}</td>
+      <td>${beDisp}</td>
+      <td>${lvlToBe}</td>
+      <td>${beToTp}</td>
+      <td>${ddToM}</td>
+      <td>${plToM}</td>
+      <td>${rrMul}</td>
+      <td>$${Math.round(reqEquity).toLocaleString()}</td>
+    </tr>`;
+
+    if (i>0 && lotSize === maxLots) break;
+  }
+
+  html += '</table>';
+  document.getElementById('result').innerHTML = html;
+}
+
+// Symbol presets
+const symbolPresets = {
+  BTCUSD: {
+    assetPrice: 113000,
+    initialLot: 0.1,
+    innerPct: 1.4,
+    riskReward: 0.7,
+    costBuffer: 10,
+    numHedges: 4,
+    spreadTicks: 1800,
+    leverage: 500,
+    contractsPerLot: 1,
+    maxLots: 100,
+    minLotInc: 0.01,
+    stopOutPct: 20,
+    startingPos: 'Buy'
+  },
+  NAS100: {
+    assetPrice: 22700,
+    initialLot: 0.5,
+    innerPct: 0.6,
+    riskReward: 0.5,
+    costBuffer: 10,
+    numHedges: 4,
+    spreadTicks: 100,
+    leverage: 500,
+    contractsPerLot: 1,
+    maxLots: 500,
+    minLotInc: 0.1,
+    stopOutPct: 20,
+    startingPos: 'Buy'
+  }
+};
+
+function populateSymbolInputs() {
+  const symbol = document.getElementById('symbolDropdown').value;
+  const preset = symbolPresets[symbol];
+  if (!preset) return;
+  document.getElementById('startingPos').value = preset.startingPos;
+  document.getElementById('assetPrice').value = preset.assetPrice;
+  document.getElementById('initialLot').value = preset.initialLot;
+  document.getElementById('innerPct').value = preset.innerPct;
+  document.getElementById('riskReward').value = preset.riskReward;
+  document.getElementById('costBuffer').value = preset.costBuffer;
+  document.getElementById('numHedges').value = preset.numHedges;
+  document.getElementById('spreadTicks').value = preset.spreadTicks;
+  document.getElementById('leverage').value = preset.leverage;
+  document.getElementById('contractsPerLot').value = preset.contractsPerLot;
+  document.getElementById('maxLots').value = preset.maxLots;
+  document.getElementById('minLotInc').value = preset.minLotInc;
+  document.getElementById('stopOutPct').value = preset.stopOutPct;
+  calculateHedges();
+}
+
+// Set defaults on page load
+window.onload = function() {
+  document.getElementById('symbolDropdown').value = 'BTCUSD';
+  populateSymbolInputs();
+};
+
+</script>
+</body>
+</html>
