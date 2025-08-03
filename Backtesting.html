@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hedge Warrior – Backtesting & EA Settings (BTCUSD & NAS100)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --primary: #18b0e9;
+      --white: #d2e7ef;
+      --bg: #14213d;
+      --container: #1a2332;
+      --card: #223155;
+      --shadow: 0 2px 14px #18202d2c;
+      --radius-lg: 18px;
+      --radius-md: 10px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 950px;
+      margin: 50px auto;
+      background: var(--container);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 44px 28px 36px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background: var(--card);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto 26px auto;
+      padding: 28px 32px 22px 32px;
+      font-size: 1em;
+      font-weight: 500;
+      text-align: left;
+      letter-spacing: 0.01em;
+      line-height: 1.47em;
+      position: relative;
+      text-shadow: 0 1px 5px #18202d33;
+    }
+    h1, .headline-blue, .summary-block-title, .section-title, .credibility {
+      color: var(--primary);
+      font-weight: bold;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 0.1em;
+    }
+    .headline-blue {
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: 500;
+      margin-bottom: 0.5em;
+      letter-spacing: 0.01em;
+    }
+    .summary-block-title, .section-title {
+      margin-bottom: 4px;
+      font-size: 1.06em;
+      display: block;
+    }
+    .summary-block {
+      background: var(--card);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto 24px auto;
+      padding: 18px 32px 13px 32px;
+      font-size: 1.07em;
+    }
+    .credibility-text {
+      color: var(--white);
+      font-weight: normal;
+    }
+    .back {
+      text-align: center;
+      margin-bottom: 2em;
+      width: 100%;
+    }
+    .back a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back a:hover {
+      text-decoration: underline;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #19243a;
+      border-radius: 8px;
+      margin-top: 22px;
+      table-layout: fixed;
+    }
+    th, td { border: 1px solid #232e4e; text-align: center; font-size: 1.06em;}
+    th { background: #222e40; color: var(--primary); }
+    tr { height: 54px; }
+    tr:nth-child(even) { background: #1e2537; }
+    .inputs-table th, .inputs-table td { height: 44px; }
+    .metrics-table { background: #202b3f; }
+    .metrics-table th { background: #2a3750; color: var(--primary);}
+    .metrics-table tr:nth-child(even) { background: #222e40; }
+    .cycles-table { background: #212a3a; }
+    .cycles-table th { background: #2a3750; color: var(--primary);}
+    .cycles-table tr:nth-child(even) { background: #222e40; }
+    @media (max-width:900px) {
+      .container{max-width:99vw;}
+      .card, .summary-block {max-width:99vw;}
+    }
+    @media (max-width:540px) {
+      .container{padding:18px 4vw 30px 4vw;}
+      h1{font-size:1.3em;}
+      .headline-blue{font-size:1.15em;}
+      table{font-size:0.95em;}
+      tr, .cycles-table th, .cycles-table td, .inputs-table th, .inputs-table td, .metrics-table th, .metrics-table td {height: 38px;}
+      .card, .summary-block {padding: 8px 2vw;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back"><a href="index.html">&larr; Back to Home</a></div>
+    <h1>Hedge Warrior – Backtesting & EA Settings</h1>
+    <div class="headline-blue">BTCUSD &amp; NAS100</div>
+    <div class="summary-block">
+      <span class="summary-block-title">Summary &amp; Testing Guidance</span>
+      <span>
+        This backtest is fully automated and based on technical strategy only. For safe operation, always test the EA thoroughly in the MT5 Strategy Tester and on a demo account to understand its handling of cycles and risk.
+        Avoid trading during major news or high-impact events, as the EA is not designed to manage extreme volatility. Go live only when you are fully comfortable with EA behavior and potential risks.
+        <br><br>
+        <span class="credibility">Credibility:</span>
+        <span class="credibility-text">Backtesting was performed using the MT5 Strategy Tester with <b>real ticks</b> and <b>execution delays</b> to closely match actual trading conditions and to capture granular tick-based price action during the testing period.</span>
+      </span>
+    </div>
+    <div class="card">
+      <span class="section-title">Performance Results</span>
+      <table class="metrics-table">
+        <colgroup>
+          <col style="width:33%;">
+          <col style="width:33%;">
+          <col style="width:34%;">
+        </colgroup>
+        <tr>
+          <th>Metric</th>
+          <th>BTCUSD</th>
+          <th>NAS100</th>
+        </tr>
+        <tr>
+          <td>Testing Period</td>
+          <td>2025-01-01 to 2025-07-30</td>
+          <td>2025-01-01 to 2025-07-30</td>
+        </tr>
+        <tr>
+          <td>Trading Days</td>
+          <td>211</td>
+          <td>145</td>
+        </tr>
+        <tr>
+          <td>Deposit</td>
+          <td>$2,000</td>
+          <td>$2,000</td>
+        </tr>
+        <tr>
+          <td>Equity Peak</td>
+          <td>$31,860</td>
+          <td>$20,051</td>
+        </tr>
+        <tr>
+          <td>Total Net Profit</td>
+          <td>$29,860</td>
+          <td>$18,051</td>
+        </tr>
+        <tr>
+          <td>Profit Multiples of Initial Deposit</td>
+          <td>15x</td>
+          <td>9x</td>
+        </tr>
+        <tr>
+          <td>Average Profit per Trading Day</td>
+          <td>$142</td>
+          <td>$124</td>
+        </tr>
+        <tr>
+          <td>Average Profit per Month<br><span style="font-weight:normal;font-size:0.92em;">(Assuming 30-day months)</span></td>
+          <td>$4,260</td>
+          <td>$3,720</td>
+        </tr>
+        <tr>
+          <td>Maximal Equity Drawdown</td>
+          <td>$4,343</td>
+          <td>$2,196</td>
+        </tr>
+        <tr>
+          <td>Drawdown % of Equity Peak</td>
+          <td>14%</td>
+          <td>11%</td>
+        </tr>
+        <tr>
+          <td>Average Monthly Profit / Maximal Drawdown</td>
+          <td>0.98</td>
+          <td>1.7</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="section-title">Cycles Breakdown</span>
+      <table class="cycles-table">
+        <colgroup>
+          <col style="width:24%;">
+          <col style="width:19%;">
+          <col style="width:19%;">
+          <col style="width:19%;">
+          <col style="width:19%;">
+        </colgroup>
+        <tr>
+          <th style="text-align:left;">Number of Hedges</th>
+          <th>BTCUSD Cycles</th>
+          <th>BTCUSD %</th>
+          <th>NAS100 Cycles</th>
+          <th>NAS100 %</th>
+        </tr>
+        <tr>
+          <td>No Hedge</td>
+          <td>1212</td>
+          <td>85%</td>
+          <td>710</td>
+          <td>68%</td>
+        </tr>
+        <tr>
+          <td>One Hedge</td>
+          <td>144</td>
+          <td>10%</td>
+          <td>245</td>
+          <td>24%</td>
+        </tr>
+        <tr>
+          <td>Two Hedges</td>
+          <td>46</td>
+          <td>3%</td>
+          <td>61</td>
+          <td>6%</td>
+        </tr>
+        <tr>
+          <td>Three Hedges</td>
+          <td>20</td>
+          <td>1%</td>
+          <td>20</td>
+          <td>1%</td>
+        </tr>
+        <tr>
+          <td>Four Hedges</td>
+          <td>7</td>
+          <td>0%</td>
+          <td>6</td>
+          <td>1%</td>
+        </tr>
+        <tr style="font-weight:bold;background:#232e4e;">
+          <td>Total Cycles</td>
+          <td>1429</td>
+          <td>100%</td>
+          <td>1042</td>
+          <td>100%</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="section-title">Hedging & Cycles (EA Logic)</span><br>
+      If price moves against your trade, the EA will hedge by opening an opposite position to avoid locking in a loss right away. The EA manages both sides, aiming to exit at breakeven or a small profit, but this is not always guaranteed—extended market moves can lead to significant drawdown.<br><br>
+      A cycle is the process from opening the first trade to closing all positions. Most cycles finish without hedging, but if needed, the EA may hedge one or more times before closing everything.
+    </div>
+    <div class="card">
+      <span class="section-title">Inputs Overview</span><br>
+      The test has been run using the following parameters for BTCUSD and NAS100 as displayed below. Please review each input setting to understand the configuration used during this backtest period.
+      <table class="inputs-table">
+        <colgroup>
+          <col style="width:33%;">
+          <col style="width:33%;">
+          <col style="width:34%;">
+        </colgroup>
+        <tr>
+          <th>Input</th>
+          <th>BTCUSD Value</th>
+          <th>NAS100 Value</th>
+        </tr>
+        <tr><td>Time Frame</td><td>5 Minutes</td><td>5 Minutes</td></tr>
+        <tr><td>Initial Lot</td><td>0.1</td><td>0.5</td></tr>
+        <tr><td>Main entries</td><td>10</td><td>5</td></tr>
+        <tr><td>Inner Distance %</td><td>1.4</td><td>0.6</td></tr>
+        <tr><td>Outer Distance Multiplier</td><td>0.7</td><td>0.5</td></tr>
+        <tr><td>Cost Multiplier</td><td>0.1</td><td>0.1</td></tr>
+        <tr><td>Trailing stop % before hedge</td><td>0.3</td><td>0.3</td></tr>
+        <tr><td>Trailing stop % after hedge</td><td>0.05</td><td>0.05</td></tr>
+        <tr><td>ATR filter</td><td>true</td><td>true</td></tr>
+        <tr><td>Minimum ATR %</td><td>0.05</td><td>0.05</td></tr>
+        <tr><td>Maximum ATR %</td><td>2</td><td>2</td></tr>
+        <tr><td>ADX filter</td><td>true</td><td>true</td></tr>
+        <tr><td>ADX</td><td>15</td><td>15</td></tr>
+        <tr><td>Squeeze Mode</td><td>BURST_RELEASE</td><td>BURST_RELEASE</td></tr>
+        <tr><td>CCI filter</td><td>false</td><td>false</td></tr>
+        <tr><td>Slow Stoch Extremes</td><td>false</td><td>false</td></tr>
+        <tr><td>Minimum |K–D|</td><td>0</td><td>1</td></tr>
+        <tr><td>Trading start hour</td><td>1</td><td>1</td></tr>
+        <tr><td>Trading end hour</td><td>23</td><td>23</td></tr>
+        <tr><td>Magic Number</td><td>1</td><td>2</td></tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
