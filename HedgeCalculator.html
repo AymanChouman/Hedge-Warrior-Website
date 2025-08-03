@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grid Hedging Calculator (Net P/L is BE to TP x net position)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      --primary: #18b0e9;
+      --white: #d2e7ef;
+      --bg: #14213d;
+      --container: #1a2332;
+      --card: #223155;
+      --shadow: 0 2px 14px #18202d2c;
+      --radius-lg: 18px;
+      --radius-md: 10px;
+      --input-bg: #232e4e;
+      --input-border: #333;
+      --input-radius: 7px;
+      --input-padding: 9px 12px;
+      --input-font: 1.04em;
+      --label-font: 1.04em;
+      --label-color: #18b0e9;
+      --input-width: 106px; /* 2/3 of previous 160px */
+    }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .container, #pwbox {
+      max-width: 1600px;
+      margin: 50px auto;
+      background: var(--container);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 44px 28px 36px 28px;
+      color: var(--white);
+    }
+    #pwbox {
+      text-align: center;
+      display: block;
+      position: relative;
+    }
+    #pwbox label {
+      color: var(--primary);
+      font-size: 1.4em;
+      font-weight: bold;
+      display:block;
+      margin-bottom: 22px;
+      margin-top: 16px;
+    }
+    #pwbox input[type="password"] {
+      width: 60%;
+      font-size:var(--input-font);
+      padding: var(--input-padding);
+      border-radius: var(--input-radius);
+      border: 1px solid var(--input-border);
+      margin-bottom: 22px;
+      background: var(--input-bg);
+      color: var(--white);
+      outline: none;
+      box-sizing: border-box;
+    }
+    #pwbox button {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      font-size: 1.15em;
+      font-weight: bold;
+      padding: 10px 28px;
+      border-radius: 7px;
+      box-shadow: 0 2px 11px #16213e55;
+      cursor: pointer;
+      transition: background 0.16s;
+      margin-bottom: 16px;
+    }
+    #pwbox button:hover { background: #009ba0; }
+    #pwbox .error {
+      color: #ff6666;
+      font-size: 1.12em;
+      margin-top: 7px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .pwbox-back {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .pwbox-back a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.13em;
+      transition: color 0.16s;
+    }
+    .pwbox-back a:hover {
+      text-decoration: underline;
+      color: #009ba0;
+    }
+    .container {
+      display: none;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 600px;
+      width: 100%;
+      box-sizing: border-box;
+      gap: 32px;
+    }
+    .input-block {
+      flex: 0 0 25%;
+      max-width: 440px;
+      min-width: 280px;
+      width: 25%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 24px;
+    }
+    .input-card, .basic-output-card {
+      background: var(--card);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      font-size: 1em;
+      font-weight: 500;
+      text-align: left;
+      letter-spacing: 0.01em;
+      line-height: 1.47em;
+      position: relative;
+      text-shadow: 0 1px 5px #18202d33;
+      margin-bottom: 0;
+      padding: 28px 24px 22px 24px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .output-block {
+      margin-top: 0;
+      font-size: 1em;
+      color: #cccccc;
+      width: 100%;
+    }
+    .output-block p {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .output-block .label {
+      flex: 0 0 130px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .output-block .value {
+      flex: 1 1 auto;
+      text-align: right;
+      color: var(--white);
+    }
+    .calc-title {
+      color: var(--primary);
+      text-align: center;
+      font-size: 2em;
+      font-weight: bold;
+      margin: 0 0 28px 0;
+      width: 100%;
+    }
+    h2 {
+      color: var(--primary);
+      font-weight: bold;
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+    .back {
+      text-align: center;
+      margin-bottom: 2em;
+      width: 100%;
+    }
+    .back a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back a:hover {
+      text-decoration: underline;
+    }
+    .inputs {
+      width: 100%;
+    }
+    /* THE FIXED INPUT ROWS */
+    .inputs .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      width: 100%;
+      gap: 12px;
+    }
+    .inputs .row label {
+      flex: 0 0 120px;
+      font-weight: 600;
+      font-size: var(--label-font);
+      color: var(--label-color);
+      word-break: break-word;
+      text-align: left;
+      margin-right: 0;
+      margin-bottom: 0;
+    }
+    .inputs .row input,
+    .inputs .row select {
+      flex: 0 0 var(--input-width);
+      max-width: var(--input-width);
+      min-width: 80px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--input-radius);
+      padding: var(--input-padding);
+      font-size: var(--input-font);
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.16s;
+      appearance: none;
+      margin-bottom: 0;
+      box-sizing: border-box;
+    }
+    .inputs .row input:focus,
+    .inputs .row select:focus {
+      border-color: var(--primary);
+    }
+    .inputs .row select {
+      cursor: pointer;
+    }
+    .table-block {
+      flex: 1 1 75%;
+      min-width: 0;
+      width: 75%;
+      max-width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    .results-card {
+      background: var(--card);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      width: 100%;
+      margin: 0;
+      padding: 28px 32px 22px 32px;
+      font-size: 1em;
+      font-weight: 500;
+      text-align: left;
+      letter-spacing: 0.01em;
+      line-height: 1.47em;
+      position: relative;
+      text-shadow: 0 1px 5px #18202d33;
+      min-width: 0;
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+    #result {
+      flex: 1 1 auto;
+      overflow-x: auto;
+      overflow-y: auto;
+      width: 100%;
+      margin-top: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg);
+      table-layout: auto;
+      font-size: 1.02em;
+      min-width: 900px;
+      max-width: 100vw;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: center;
+      word-wrap: break-word;
+      border-bottom: 1px solid #232e4e;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #14213d;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    tr:nth-child(even) td { background: #192035; }
+    tr:nth-child(odd)  td { background: #1a2332; }
+    tr:hover td         { background: #22314e; }
+    .buy, .profit      { color: #66ff66; }
+    .sell, .loss       { color: #ff6666; }
+    .maxdd             { color: #ff6666; font-weight: 600; }
+    .maxdd.zero        { color: #cccccc; font-weight: 400; }
+    .beval             { color: #ffe066; font-weight: 600; }
+    @media (max-width:1200px) {
+      .container {flex-direction:column;}
+      .input-block, .table-block {width:100%;max-width:99vw;}
+      .table-block {margin-top:24px;}
+      .results-card {padding: 16px 4vw;}
+    }
+    @media (max-width:900px) {
+      .container, #pwbox {max-width:99vw;}
+      .card, .results-card {max-width:99vw;}
+      .output-block, .inputs {max-width:99vw;}
+      .input-block, .table-block {max-width:99vw;}
+    }
+    @media (max-width:540px) {
+      .container, #pwbox {padding:18px 4vw 30px 4vw;}
+      .card, .results-card {padding: 8px 2vw;}
+      table, th, td{font-size:0.95em;}
+      th, td { padding: 8px 5px; }
+      .output-block p { flex-direction: column; align-items: flex-start; margin-bottom: 6px; }
+      .output-block .label, .output-block .value { text-align: left; }
+      .inputs .row { flex-direction: column; gap: 2px; }
+      .inputs .row label { margin-bottom: 2px; }
+      .inputs .row input, .inputs .row select { width: 100%; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Password Gate -->
+  <form id="pwbox" onsubmit="return false;">
+    <div class="pwbox-back"><a href="index.html">&larr; Back to Home</a></div>
+    <label for="pwinput">Enter Password to use calculator:</label>
+    <input id="pwinput" type="password" autocomplete="off" autofocus>
+    <button id="pwbtn">Access Calculator</button>
+    <div id="pwerr" class="error" style="display:none;"></div>
+  </form>
+  <div class="container">
+    <div class="input-block">
+      <div class="back"><a href="index.html">&larr; Back to Home</a></div>
+      <div class="calc-title">Grid Hedging Calculator</div>
+      <div class="input-card card">
+        <h2>Inputs</h2>
+        <div class="inputs">
+          <div class="row">
+            <label for="symbolDropdown">Symbol:</label>
+            <select id="symbolDropdown" onchange="populateSymbolInputs()">
+              <option value="BTCUSD">BTCUSD</option>
+              <option value="NAS100">NAS100</option>
+            </select>
+          </div>
+          <div class="row"><label for="startingPos">Direction:</label>
+            <select id="startingPos" oninput="calculateHedges()">
+              <option>Buy</option>
+              <option>Sell</option>
+            </select>
+          </div>
+          <div class="row"><label for="assetPrice">Entry Price:</label>
+            <input id="assetPrice" type="number" value="113000" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="initialLot">Lot Size:</label>
+            <input id="initialLot" type="number" value="0.1" step="0.01" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="innerPct">Inner Gap %:</label>
+            <input id="innerPct" type="number" value="1.4" step="0.01" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="riskReward">RR Ratio:</label>
+            <input id="riskReward" type="number" value="0.7" step="0.01" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="costBuffer">Buffer %:</label>
+            <input id="costBuffer" type="number" value="10" step="0.1" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="numHedges">Hedge Count:</label>
+            <input id="numHedges" type="number" value="4" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="spreadTicks">Spread Ticks:</label>
+            <input id="spreadTicks" type="number" value="1800" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="leverage">Leverage:</label>
+            <input id="leverage" type="number" value="500" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="contractsPerLot">Contracts / Lot:</label>
+            <input id="contractsPerLot" type="number" value="1" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="maxLots">Max Lots:</label>
+            <input id="maxLots" type="number" value="100" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="minLotInc">Min Lot Increment:</label>
+            <input id="minLotInc" type="number" value="0.01" step="0.01" oninput="calculateHedges()">
+          </div>
+          <div class="row"><label for="stopOutPct">Stop-Out %:</label>
+            <input id="stopOutPct" type="number" value="20" step="0.01" oninput="calculateHedges()">
+          </div>
+        </div>
+      </div>
+      <div class="basic-output-card card">
+        <h2>Basic Output</h2>
+        <div class="output-block">
+          <p><span class="label">Gap Points:</span><span class="value" id="innerDistance">0</span></p>
+          <p><span class="label">Outer Gap:</span><span class="value" id="outerDistance">0</span></p>
+          <p><span class="label">Level → TP %:</span><span class="value" id="distToOuter">–</span></p>
+          <p><span class="label">Entry Level:</span><span class="value" id="mainHedge">–</span></p>
+          <p><span class="label">Hedge Level:</span><span class="value" id="hedgeLevel">–</span></p>
+          <p><span class="label">Upper TP:</span><span class="value" id="upperOuter">–</span></p>
+          <p><span class="label">Lower TP:</span><span class="value" id="lowerOuter">–</span></p>
+          <p><span class="label">Buffer Req:</span><span class="value" id="bufferRequired">0%</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="table-block">
+      <div class="results-card">
+        <h2>Results Table</h2>
+        <div id="result"></div>
+      </div>
+    </div>
+  </div>
+<script>
+function parseNumber(str) {
+  return parseFloat(str.replace(/,/g, '')) || 0;
+}
+function formatNumber(n, digits = 2) {
+  if (typeof n === "string") n = parseFloat(n);
+  return n.toLocaleString(undefined, {minimumFractionDigits: digits, maximumFractionDigits: digits});
+}
+function calculateHedges() {
+  const startingPos     = document.getElementById('startingPos').value;
+  const assetPrice      = parseNumber(document.getElementById('assetPrice').value);
+  const initialLot      = parseNumber(document.getElementById('initialLot').value);
+  const innerPct        = parseNumber(document.getElementById('innerPct').value) / 100;
+  const rr              = parseNumber(document.getElementById('riskReward').value);
+  const costBuffer      = parseNumber(document.getElementById('costBuffer').value) / 100;
+  const numHedges       = parseInt(document.getElementById('numHedges').value, 10) || 0;
+  const spreadTicks     = parseNumber(document.getElementById('spreadTicks').value);
+  const leverage        = parseNumber(document.getElementById('leverage').value);
+  const contractsPerLot = parseNumber(document.getElementById('contractsPerLot').value);
+  const maxLots         = parseNumber(document.getElementById('maxLots').value);
+  const minLotInc       = parseNumber(document.getElementById('minLotInc').value);
+  const stopOutPct      = parseNumber(document.getElementById('stopOutPct').value) / 100;
+  const tickSize        = 0.01;
+  const innerDistPts = assetPrice * innerPct;
+  const outerDistPts = innerDistPts * rr;
+  document.getElementById('innerDistance').innerText = Math.round(innerDistPts).toLocaleString();
+  document.getElementById('outerDistance').innerText = Math.round(outerDistPts).toLocaleString();
+  document.getElementById('distToOuter').innerText = assetPrice
+    ? ((outerDistPts / assetPrice * 100).toFixed(2) + '%')
+    : '–';
+  document.getElementById('bufferRequired').innerText = innerDistPts
+    ? ((spreadTicks * tickSize / innerDistPts * 100).toFixed(1) + ' %')
+    : '0.0 %';
+  let entryMain, entryHedge;
+  if (startingPos === 'Buy') {
+    entryMain = assetPrice;
+    entryHedge = assetPrice - innerDistPts;
+  } else {
+    entryMain = assetPrice;
+    entryHedge = assetPrice + innerDistPts;
+  }
+  document.getElementById('mainHedge').innerText = formatNumber(entryMain, 2);
+  document.getElementById('hedgeLevel').innerText = formatNumber(entryHedge, 2);
+  const upperInner = Math.max(entryMain, entryHedge);
+  const lowerInner = Math.min(entryMain, entryHedge);
+  const innerGap = Math.abs(entryMain - entryHedge);
+  const upperTP = upperInner + innerGap * rr;
+  const lowerTP = lowerInner - innerGap * rr;
+  document.getElementById('upperOuter').innerText = formatNumber(upperTP, 2);
+  document.getElementById('lowerOuter').innerText = formatNumber(lowerTP, 2);
+  let html = '<table><tr>' +
+    '<th></th><th>Level Price</th><th>Type</th><th>Lots</th>' +
+    '<th>Net</th><th>Margin</th><th>Max DD</th><th>Net P/L</th>' +
+    '<th>BE</th><th>Lvl→BE%</th><th>BE→TP%</th><th>DD→M</th>' +
+    '<th>P/L→M</th><th>RR</th><th>Req Equity</th>' +
+    '</tr>';
+  const coeff = (rr + 1) / rr;
+  let totalBuys = 0, totalSells = 0, costBuys = 0, costSells = 0;
+  let netVolCont = 0;
+  let avgEntry = 0;
+  function getRowLabel(i) {
+    if (i === 0) return "M";
+    return "H" + i;
+  }
+  function getLevelPrice(i) {
+    return (i % 2 === 0) ? entryMain : entryHedge;
+  }
+  for (let i = 0; i < 1 + numHedges; i++) {
+    const dir = startingPos === 'Buy'
+      ? (i % 2 === 0 ? 'Buy' : 'Sell')
+      : (i % 2 === 0 ? 'Sell' : 'Buy');
+    const lvl = getLevelPrice(i);
+    let lotSize;
+    if (i === 0) {
+      lotSize = initialLot;
+    } else {
+      const rawLot = coeff * (dir === 'Sell' ? totalBuys : totalSells)
+                   - (dir === 'Sell' ? totalSells : totalBuys);
+      let stepLot = Math.round(rawLot * (1 + costBuffer) / minLotInc) * minLotInc;
+      if (stepLot >= maxLots) {
+        lotSize = maxLots;
+      } else {
+        lotSize = Math.max(minLotInc, stepLot);
+      }
+    }
+    if (dir === 'Buy') {
+      totalBuys += lotSize;
+      costBuys += lotSize * contractsPerLot * lvl;
+      netVolCont += lotSize * contractsPerLot;
+    } else {
+      totalSells += lotSize;
+      costSells += lotSize * contractsPerLot * lvl;
+      netVolCont -= lotSize * contractsPerLot;
+    }
+    avgEntry = netVolCont !== 0 ? (costBuys - costSells) / netVolCont : 0;
+    const marginReq  = Math.round(Math.abs(netVolCont) * assetPrice / leverage);
+    let adverseInner;
+    if (netVolCont > 0) {
+      adverseInner = lowerInner;
+    } else if (netVolCont < 0) {
+      adverseInner = upperInner;
+    } else {
+      adverseInner = lvl;
+    }
+    let maxDD = Math.round((adverseInner - avgEntry) * netVolCont);
+    let netPL = 0, TP = 0;
+    if (netVolCont > 0) {
+      TP = upperInner + innerGap * rr;
+      netPL = Math.abs(netVolCont) * (TP - avgEntry);
+    } else if (netVolCont < 0) {
+      TP = lowerInner - innerGap * rr;
+      netPL = Math.abs(netVolCont) * (avgEntry - TP);
+    }
+    netPL = Math.round(netPL);
+    let maxDDDisplay = maxDD < 0
+      ? '–$' + Math.abs(maxDD).toLocaleString()
+      : '$' + maxDD.toLocaleString();
+    let maxDDClass = maxDD < 0 ? 'maxdd' : 'maxdd zero';
+    let netPLDisplay = netPL > 0 ? '$' + netPL.toLocaleString() : '$0';
+    const beDisp = netVolCont ? `<span class="beval">${formatNumber(avgEntry, 2)}</span>` : '–';
+    const lvlDisp = formatNumber(lvl, 2);
+    const lvlToBe= netVolCont && lvl ? (((avgEntry - lvl)/lvl)*100).toFixed(2)+'%' : '–';
+    const beToTp = netVolCont && avgEntry && TP
+      ? (Math.abs((netVolCont>0?TP-avgEntry:avgEntry-TP))/Math.abs(avgEntry)*100).toFixed(2)+'%'
+      : '–';
+    const ddToM = marginReq ? (Math.abs(maxDD)/marginReq).toFixed(1)+'×' : '–';
+    const plToM = marginReq ? (netPL/marginReq).toFixed(1)+'×' : '–';
+    const rrMul = netPL>0&&maxDD<0 ? (netPL/Math.abs(maxDD)).toFixed(1)+'×' : '–';
+    const reqEquity = Math.abs(maxDD) + (marginReq * stopOutPct);
+    const netDisp   = (netVolCont/ contractsPerLot)>0
+      ? `<span class="buy">${(netVolCont / contractsPerLot).toFixed(2)}</span>`
+      : (netVolCont/ contractsPerLot)<0
+        ? `<span class="sell">${Math.abs(netVolCont / contractsPerLot).toFixed(2)}</span>`
+        : '0';
+    html += `<tr>
+      <td>${getRowLabel(i)}</td>
+      <td>${lvlDisp}</td>
+      <td class="${dir.toLowerCase()}">${dir}</td>
+      <td>${lotSize.toFixed(2)}</td>
+      <td>${netDisp}</td>
+      <td>$${marginReq.toLocaleString()}</td>
+      <td class="${maxDDClass}">${maxDDDisplay}</td>
+      <td class="${netPL>0?'profit':'loss'}">${netPLDisplay}</td>
+      <td>${beDisp}</td>
+      <td>${lvlToBe}</td>
+      <td>${beToTp}</td>
+      <td>${ddToM}</td>
+      <td>${plToM}</td>
+      <td>${rrMul}</td>
+      <td>$${Math.round(reqEquity).toLocaleString()}</td>
+    </tr>`;
+    if (i>0 && lotSize === maxLots) break;
+  }
+  html += '</table>';
+  document.getElementById('result').innerHTML = html;
+}
+const symbolPresets = {
+  BTCUSD: {
+    assetPrice: 113000,
+    initialLot: 0.1,
+    innerPct: 1.4,
+    riskReward: 0.7,
+    costBuffer: 10,
+    numHedges: 4,
+    spreadTicks: 1800,
+    leverage: 500,
+    contractsPerLot: 1,
+    maxLots: 100,
+    minLotInc: 0.01,
+    stopOutPct: 20,
+    startingPos: 'Buy'
+  },
+  NAS100: {
+    assetPrice: 22700,
+    initialLot: 0.5,
+    innerPct: 0.6,
+    riskReward: 0.5,
+    costBuffer: 10,
+    numHedges: 4,
+    spreadTicks: 100,
+    leverage: 500,
+    contractsPerLot: 1,
+    maxLots: 500,
+    minLotInc: 0.1,
+    stopOutPct: 20,
+    startingPos: 'Buy'
+  }
+};
+function populateSymbolInputs() {
+  const symbol = document.getElementById('symbolDropdown').value;
+  const preset = symbolPresets[symbol];
+  if (!preset) return;
+  document.getElementById('startingPos').value = preset.startingPos;
+  document.getElementById('assetPrice').value = preset.assetPrice;
+  document.getElementById('initialLot').value = preset.initialLot;
+  document.getElementById('innerPct').value = preset.innerPct;
+  document.getElementById('riskReward').value = preset.riskReward;
+  document.getElementById('costBuffer').value = preset.costBuffer;
+  document.getElementById('numHedges').value = preset.numHedges;
+  document.getElementById('spreadTicks').value = preset.spreadTicks;
+  document.getElementById('leverage').value = preset.leverage;
+  document.getElementById('contractsPerLot').value = preset.contractsPerLot;
+  document.getElementById('maxLots').value = preset.maxLots;
+  document.getElementById('minLotInc').value = preset.minLotInc;
+  document.getElementById('stopOutPct').value = preset.stopOutPct;
+  calculateHedges();
+}
+const pwbox = document.getElementById('pwbox');
+const pwinput = document.getElementById('pwinput');
+const pwbtn = document.getElementById('pwbtn');
+const pwerr = document.getElementById('pwerr');
+const mainContainer = document.querySelector('.container');
+function showError(txt) {
+  pwerr.innerText = txt;
+  pwerr.style.display = 'block';
+}
+function unlockCalculator() {
+  pwbox.style.display = 'none';
+  mainContainer.style.display = 'flex';
+  document.body.scrollTop = document.documentElement.scrollTop = 0;
+  document.getElementById('symbolDropdown').value = 'BTCUSD';
+  populateSymbolInputs();
+}
+pwbtn.onclick = function() {
+  const val = pwinput.value.trim();
+  if (val === "zeroescape") {
+    unlockCalculator();
+  } else {
+    showError("Incorrect password. Try again.");
+    pwinput.value = "";
+    pwinput.focus();
+  }
+};
+pwinput.onkeypress = function(e) {
+  if (e.key === "Enter") pwbtn.click();
+};
+window.onload = function() {
+  pwinput.focus();
+};
+</script>
+</body>
+</html>
