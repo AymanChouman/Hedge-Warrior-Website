@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hedge Warrior V1 – All-in-One Automated Trading</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --primary: #00adb5;
+      --white: #e0e6ed;
+      --bg: #16213e;
+      --card: #1a2332;
+      --shadow: 0 7px 34px #14213d80;
+      --radius-lg: 22px;
+      --accent: #ff2566;
+      --btn-bg: #ff2566;        /* Updated: red button background */
+      --btn-color: #fff;        /* Button text is white */
+      --btn-hover-bg: #e01b4b;  /* Darker red for hover */
+      --btn-hover-color: #fff;
+    }
+    body {
+      background: linear-gradient(135deg,#0d1b2a,#222e40 85%);
+      color: var(--white);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .hero {
+      text-align: center;
+      margin-top: 36px;
+      margin-bottom: 24px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .hero-icon {
+      margin-bottom: 8px;
+      filter: drop-shadow(0 2px 16px #0d1b2a80);
+      height: 63px;
+      width: 63px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-emoji {
+      font-size: 3.8em;
+      margin-bottom: 8px;
+      display: none;
+    }
+    .hero-title {
+      font-size: 2.2em;
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 9px;
+    }
+    .hero-sub {
+      font-size: 1.11em;
+      color: var(--white);
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 0.01em;
+      opacity: 0.93;
+    }
+    .hero-sub .accent {
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .hero-marketing {
+      font-size: 1em;
+      color: #e0e6ed;
+      font-weight: 500;
+      margin: 2px auto 18px auto;
+      max-width: 700px;
+      line-height: 1.51em;
+      opacity: 1;
+      letter-spacing: 0.01em;
+    }
+    .buttons-flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: stretch;
+      gap: 18px 18px;
+      max-width: 900px;
+      margin: 0 auto 22px auto;
+      margin-top: 18px;
+      flex-direction: row;
+      position: relative;
+      min-height: 0;
+    }
+    .main-btn {
+      background: var(--btn-bg);
+      color: var(--btn-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      border: none;
+      padding: 0 18px;
+      display: flex;
+      flex-direction: row; /* Icon left, text right */
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+      font-size: 1.04em;
+      font-weight: bold;
+      text-decoration: none;
+      width: 260px;
+      min-width: 220px;
+      max-width: 320px;
+      height: 52px;         /* Smaller height */
+      cursor: pointer;
+      transition: background 0.17s, box-shadow 0.17s, transform 0.16s, color 0.17s;
+      outline: none;
+      position: relative;
+      z-index: 1;
+      user-select: none;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+    .main-btn:hover, .main-btn:focus {
+      background: var(--btn-hover-bg);
+      color: var(--btn-hover-color);
+      box-shadow: 0 9px 32px #1a2332b0;
+      transform: translateY(-2px) scale(1.04);
+    }
+    .main-btn .btn-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 13px;
+      box-shadow: 0 2px 9px #22314e55;
+      font-size: 1.4em;
+      flex-shrink: 0;
+      color: var(--btn-bg);
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .btn-backtesting   .btn-icon { background: #fff; color: var(--btn-bg);}
+    .btn-getstarted    .btn-icon { background: #fff; color: var(--btn-bg);}
+    .btn-userguide     .btn-icon { background: #fff; color: var(--btn-bg);}
+    .btn-calculator    .btn-icon { background: #fff; color: var(--btn-bg);}
+    .main-btn .btn-label {
+      font-size: 1em;
+      font-weight: bold;
+      text-shadow: 0 2px 9px #16213e22;
+      letter-spacing: 0.01em;
+      text-align: left;
+      width: auto;
+      display: block;
+    }
+    .btn-backtesting,
+    .btn-getstarted,
+    .btn-userguide,
+    .btn-calculator {
+      position: static;
+      width: 260px;
+      min-width: 220px;
+      max-width: 320px;
+      margin: 0;
+    }
+    .warning-card {
+      background: var(--card);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      border: none;
+      box-shadow: var(--shadow);
+      max-width: 700px;
+      margin: 10px auto 32px auto;
+      padding: 18px 22px;
+      font-size: 1em;
+      font-weight: 600;
+      text-align: left;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      letter-spacing: 0.01em;
+      line-height: 1.47em;
+      position: relative;
+    }
+    .warning-card .warning-icon {
+      display: block;
+      font-size: 2.1em;
+      color: #ff2566;
+      flex-shrink: 0;
+      margin-right: 10px;
+      margin-left: 3px;
+      filter: drop-shadow(0 2px 7px #ff2566aa);
+    }
+    .warning-card .warning-text {
+      flex: 1;
+      color: var(--white);
+    }
+    .warning-card .card-heading {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.05em;
+      margin-bottom: 6px;
+      display: block;
+    }
+    @media (max-width:700px) {
+      .hero {margin-top:18px; margin-bottom:12px;}
+      .main-btn {
+        height: 44px;
+        font-size: 0.99em;
+        min-width: 98vw;
+        width: 98vw;
+        max-width: 98vw;
+      }
+      .main-btn .btn-icon {width: 25px; height: 25px; font-size: 1em;}
+      .buttons-flex {
+        gap: 12px 8px;
+        flex-direction: column;
+        align-items: stretch;
+        position: static;
+        max-width: 98vw;
+        margin: 0 auto 16px auto;
+      }
+      .btn-backtesting,
+      .btn-getstarted,
+      .btn-userguide,
+      .btn-calculator {
+        position: static;
+        width: 98vw;
+        min-width: 0;
+        margin: 0;
+        max-width: 98vw;
+      }
+      .warning-card {font-size: 0.97em; padding: 11px 7px;}
+      .hero-marketing {font-size:1em; padding-left:2px; padding-right:2px;}
+      .hero-title {font-size:1.2em;}
+      .hero-sub {font-size:1em;}
+    }
+    @media (max-width:480px) {
+      .hero-title{font-size:1em;}
+      .main-btn {height: 36px; font-size: 0.96em;}
+      .main-btn .btn-icon {width: 18px; height: 18px; font-size: 0.91em;}
+      .warning-card {font-size: 0.93em;}
+      .hero-marketing {font-size:0.99em;}
+    }
+    @media (max-width:370px) {
+      .main-btn {height: 28px; font-size: 0.89em;}
+      .main-btn .btn-icon {width: 12px; height: 12px; font-size: 0.89em;}
+      .warning-card {font-size: 0.91em;}
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <!-- Robot Icon as image (shows if file exists), shows emoji if not -->
+    <img src="icon-bot.png" alt="Hedge Warrior Bot" class="hero-icon" onerror="this.style.display='none';document.querySelector('.hero-emoji').style.display='block';" />
+    <div class="hero-emoji" style="display:none;">🤖</div>
+    <div class="hero-title">Hedge Warrior V1</div>
+    <div class="hero-sub">
+      Automated Trading Robot for Any Market — <span style="color:#00adb5;font-weight:bold;">Fast</span>, <span style="color:#00adb5;font-weight:bold;">Smart</span>, <span style="color:#00adb5;font-weight:bold;">Adaptive</span> &amp; <span class="accent">Future-Ready</span>
+    </div>
+    <div class="hero-marketing">
+      <b>Discover Hedge Warrior V1 – the next step in automated MetaTrader 5 trading.</b><br>
+      Designed for traders who want more control and versatility, Hedge Warrior V1 combines intelligent position splitting, dynamic hedging, and automated risk management in one powerful EA.<br>
+      This robot adapts to market conditions with configurable indicator filters and session controls, so you can stay focused on strategy and let the automation do the heavy lifting.
+    </div>
+  </div>
+  <div class="buttons-flex">
+    <!-- Backtesting -->
+    <a href="Backtesting.html" class="main-btn btn-backtesting">
+      <div class="btn-icon"><span>📊</span></div>
+      <div class="btn-label">Backtesting</div>
+    </a>
+    <!-- Getting Started -->
+    <a href="GettingStarted.html" class="main-btn btn-getstarted">
+      <div class="btn-icon"><span>🚀</span></div>
+      <div class="btn-label">Getting Started</div>
+    </a>
+    <!-- User Guide -->
+    <a href="Guide.html" class="main-btn btn-userguide">
+      <div class="btn-icon"><span>📄</span></div>
+      <div class="btn-label">User Guide</div>
+    </a>
+    <!-- Calculator -->
+    <a href="HedgeCalculator.html" class="main-btn btn-calculator">
+      <div class="btn-icon"><span>🧮</span></div>
+      <div class="btn-label">Hedge Calculator</div>
+    </a>
+  </div>
+  <div class="warning-card">
+    <span class="warning-icon">⚠️</span>
+    <span class="warning-text">
+      <span class="card-heading">Disclaimer</span>
+      Start with demo trading and switch to live only once you are fully comfortable with its features and behavior.<br>
+      Hedge Warrior V1 is a trading tool, not investment advice. Past performance does not guarantee future results. Use at your own risk. Trading leveraged products involves significant risk of loss, and you should never trade with money you cannot afford to lose.
+    </span>
+  </div>
+</body>
+</html>
